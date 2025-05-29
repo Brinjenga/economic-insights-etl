@@ -59,5 +59,5 @@ data/cleaned/ – Normalized tabular CSVs
 data/parquet/ – Partitioned Parquet files
 ```
 
-License
+📚 License
 MIT License
