@@ -52,11 +52,11 @@ python main.py
 ```
 3. Outputs will appear in:
 ```bash
-data/raw/ – Unprocessed API responses
+data/bronze/ – raw data
 
-data/cleaned/ – Normalized tabular CSVs
+data/silver/ – transformed data
 
-data/parquet/ – Partitioned Parquet files
+data/gold/ – data used in logic
 ```
 
 📚 License
