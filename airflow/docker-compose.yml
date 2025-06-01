@@ -1,0 +1,79 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:13
+    environment:
+      - POSTGRES_USER=airflow
+      - POSTGRES_PASSWORD=airflow
+      - POSTGRES_DB=airflow
+    volumes:
+      - postgres-db-volume:/var/lib/postgresql/data
+
+  airflow-init:
+    image: apache/airflow:2.8.1
+    depends_on:
+      - postgres
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
+      - AIRFLOW__CORE__FERNET_KEY=airflowfernetkey
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      - AIRFLOW__API__AUTH_BACKEND=airflow.api.auth.backend.basic_auth
+    entrypoint: ["/bin/bash", "-c"]
+    command:
+      - |
+        airflow db upgrade && \
+        airflow users create \
+          --username airflow \
+          --password airflow \
+          --firstname Airflow \
+          --lastname Admin \
+          --role Admin \
+          --email admin@example.com
+    volumes:
+      - ../dags:/opt/airflow/dags
+      - ../data:/data
+      - ./requirements.txt:/requirements.txt
+    user: "50000:0"
+
+  webserver:
+    image: apache/airflow:2.8.1
+    depends_on:
+      - airflow-init
+      - postgres
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
+      - AIRFLOW__CORE__FERNET_KEY=airflowfernetkey
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      - AIRFLOW__API__AUTH_BACKEND=airflow.api.auth.backend.basic_auth
+    ports:
+      - "8080:8080"
+    command: webserver
+    volumes:
+      - ../dags:/opt/airflow/dags
+      - ../data:/data
+      - ./requirements.txt:/requirements.txt
+    user: "50000:0"
+
+  scheduler:
+    image: apache/airflow:2.8.1
+    depends_on:
+      - airflow-init
+      - postgres
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
+      - AIRFLOW__CORE__FERNET_KEY=airflowfernetkey
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      - AIRFLOW__API__AUTH_BACKEND=airflow.api.auth.backend.basic_auth
+    command: scheduler
+    volumes:
+      - ../dags:/opt/airflow/dags
+      - ../data:/data
+      - ./requirements.txt:/requirements.txt
+    user: "50000:0"
+
+volumes:
+  postgres-db-volume:
