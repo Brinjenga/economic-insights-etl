@@ -1,7 +1,6 @@
 import sys
 import os
 import requests
-from data_pipeline.utils.world_bank_api_utils import save_raw_data_to_parquet
 import pandas as pd
 from pyspark.sql import SparkSession
 

@@ -12,5 +12,3 @@ def ingest_electricity_access_data(country_code, start_year, end_year):
         table=f"electricity_access_{country_code.lower()}"
     )
 
-if __name__ == "__main__":
-    ingest_electricity_access_data("NGA", 2000, 2020)

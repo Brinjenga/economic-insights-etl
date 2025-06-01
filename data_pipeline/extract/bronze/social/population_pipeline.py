@@ -14,5 +14,3 @@ def ingest_population_data(country_code, start_year, end_year):
         table=f"population_{country_code.lower()}"
     )
 
-if __name__ == "__main__":
-    ingest_population_data("KEN", 2000, 2020)

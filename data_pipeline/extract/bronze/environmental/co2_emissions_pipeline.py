@@ -14,5 +14,3 @@ def ingest_co2_emissions_data(country_code, start_year, end_year):
         table=f"co2_emissions_{country_code.lower()}"
     )
 
-if __name__ == "__main__":
-    ingest_co2_emissions_data("CHN", 2000, 2020)
