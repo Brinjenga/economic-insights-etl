@@ -1,7 +1,6 @@
 import sys
 import os
 import requests
-import pandas as pd
 from pyspark.sql import SparkSession
 
 def fetch_all_countries():
@@ -19,10 +18,9 @@ def fetch_all_countries():
 
 def transform_countries_to_tabular(raw_data):
     """
-    Transform the raw JSON country data to a tabular format (list of dicts).
-    Returns a pandas DataFrame.
+    Transform the raw JSON country data to a PySpark DataFrame-ready list of dicts.
+    Returns a list of dicts for DataFrame creation.
     """
-    # The country data is in raw_data[1]
     countries = raw_data[1] if isinstance(raw_data, list) and len(raw_data) > 1 else []
     records = []
     for entry in countries:
@@ -36,13 +34,13 @@ def transform_countries_to_tabular(raw_data):
             'longitude': entry.get('longitude'),
             'latitude': entry.get('latitude')
         })
-    return pd.DataFrame(records)
+    return records
 
 def ingest_countries():
     raw_data = fetch_all_countries()
-    df = transform_countries_to_tabular(raw_data)
     spark = SparkSession.builder.getOrCreate()
-    spark_df = spark.createDataFrame(df)
+    records = transform_countries_to_tabular(raw_data)
+    spark_df = spark.createDataFrame(records)
     base_dir = os.path.join("data", "bronze", "utils")
     os.makedirs(base_dir, exist_ok=True)
     parquet_path = os.path.join(base_dir, "countries.parquet")

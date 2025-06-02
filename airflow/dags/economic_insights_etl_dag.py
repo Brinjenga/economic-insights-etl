@@ -1,7 +1,7 @@
 from airflow import DAG
-from airflow.operators import PythonOperator
+from airflow.operators.python import PythonOperator
 from datetime import datetime
-import pandas as pd
+from pyspark.sql import SparkSession
 from data_pipeline.extract.bronze.economic.gdp_pipeline import ingest_gdp_data
 from data_pipeline.extract.bronze.social.population_pipeline import ingest_population_data
 from data_pipeline.extract.bronze.environmental.co2_emissions_pipeline import ingest_co2_emissions_data
@@ -12,10 +12,12 @@ START_YEAR = 2010
 END_YEAR = 2011
 
 def get_country_codes():
-    df = pd.read_parquet(COUNTRIES_PARQUET_PATH)
+    spark = SparkSession.builder.getOrCreate()
+    df = spark.read.parquet(COUNTRIES_PARQUET_PATH)
     if 'country_code' not in df.columns:
         raise ValueError("'country_code' column not found in countries.parquet")
-    return df['country_code'].dropna().unique().tolist()
+    country_codes = df.select('country_code').dropna().distinct().rdd.flatMap(lambda x: x).collect()
+    return country_codes
 
 def ingest_gdp(**kwargs):
     for code in get_country_codes():
