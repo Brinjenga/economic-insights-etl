@@ -2,4 +2,5 @@ apache-airflow==2.8.1
 pyspark==3.5.1
 requests==2.32.3
 apache-airflow-providers-smtp==1.8.0
+great_expectations
 # Add more Airflow providers here if you use them in your DAGs
