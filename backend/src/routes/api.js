@@ -3,6 +3,7 @@ import cors from 'cors';
 import fs from 'fs';
 import path from 'path';
 import parquet from 'parquetjs-lite';
+import { getCountries } from '../controllers/countryController.js';
 
 const router = express.Router();
 router.use(cors());
@@ -20,15 +21,17 @@ async function readParquetRows(parquetPath) {
   return rows;
 }
 
+// Health check endpoint
+router.get('/health', (req, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
 // API: Countries
-router.get('/countries', async (req, res) => {
-  try {
-    const parquetPath = path.join(path.resolve(), 'data/bronze/utils/countries.parquet/part-00000-49f8c137-7db6-48f1-a403-a97441aab066-c000.snappy.parquet');
-    const countries = await readParquetRows(parquetPath);
-    res.json(countries);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+router.get('/countries', getCountries);
+
+// 404 handler for unknown API routes
+router.use((req, res) => {
+  res.status(404).json({ error: 'API endpoint not found' });
 });
 
 // TODO: Add endpoints for GDP, population, CO2, electricity, etc.

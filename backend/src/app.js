@@ -7,6 +7,7 @@ import apiRoutes from './routes/api.js';
 
 const app = express();
 app.use(cors());
+app.use(express.json()); // Robust: parse JSON bodies
 app.use('/api', apiRoutes);
 
 // Example: Serve country list from bronze layer
@@ -28,6 +29,12 @@ app.get('/api/countries', async (req, res) => {
 });
 
 // TODO: Add endpoints for GDP, population, CO2, electricity, etc.
+
+// Global error handler for uncaught errors
+app.use((err, req, res, next) => {
+  console.error('Unhandled error:', err);
+  res.status(500).json({ error: 'Internal server error' });
+});
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {

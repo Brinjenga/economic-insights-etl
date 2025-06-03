@@ -1,10 +1,16 @@
 import React from 'react';
+import Navbar from 'react-bootstrap/Navbar';
+import Container from 'react-bootstrap/Container';
 
 function DashboardHeader() {
   return (
-    <header style={{ background: '#1a237e', color: 'white', padding: '1rem' }}>
-      <h1>Economic Insights Dashboard</h1>
-    </header>
+    <Navbar bg="primary" variant="dark" expand="lg" className="mb-4">
+      <Container>
+        <Navbar.Brand href="#home">
+          Economic Insights Dashboard
+        </Navbar.Brand>
+      </Container>
+    </Navbar>
   );
 }
 

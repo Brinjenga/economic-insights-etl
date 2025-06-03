@@ -1,12 +1,15 @@
 import React from 'react';
+import ListGroup from 'react-bootstrap/ListGroup';
 
 function CountryList({ countries }) {
   return (
-    <ul>
+    <ListGroup variant="flush">
       {countries.map((c, i) => (
-        <li key={i}>{c.name} ({c.id})</li>
+        <ListGroup.Item key={i}>
+          {c.name} ({c.id})
+        </ListGroup.Item>
       ))}
-    </ul>
+    </ListGroup>
   );
 }
 
